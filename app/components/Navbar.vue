@@ -55,12 +55,10 @@
             }}</span>
           </a>
         </div>
-
         <!-- Do not remove this from the DOM with v-if. Currently the volume meter needs to exist in order to populate microphoneName. -->
         <volume-meter
           v-bind:hidden="!captioningOn || waitingForInitialTranscript"
         ></volume-meter>
-
         <div
           v-if="waitingForInitialTranscript"
           class="navbar-text small text-primary mr-3"
@@ -69,7 +67,7 @@
           <b-spinner small type="grow" />
           <strong>{{ $t('navbar.captioner.listening') }}</strong>
           <transition name="fade">
-            <span v-if="microphoneName">&middot; {{ microphoneName }}</span>
+            <span v-if="microphoneName">· {{ microphoneName }}</span>
           </transition>
         </div>
         <cast-button></cast-button>
@@ -106,12 +104,12 @@
             v-b-tooltip.top
             @click="
               hideAllTooltips();
-              $store.commit('SET_CHANNEL_ERRORS_SEEN');
+              $store.commit('SETCHANNELERRORS_SEEN');
             "
             :title="
-              `Channels ${
+              Channels ${
                 $store.state.channels.unseenErrorExists ? '(Error)' : ''
-              }`
+              }
             "
             id="navbar-channels-button"
             class="px-2"
@@ -168,7 +166,6 @@
         >
           <channels-popup />
         </b-popover>
-
         <b-button
           id="navbar-settings-button"
           @click="showSettingsMenu = !showSettingsMenu"
@@ -197,15 +194,32 @@
         </b-button>
       </div>
     </nav>
-  </div>
-</template>
+&lt;!-- Bloco das legendas para OBS --&gt;
+&lt;div
+  id="obs-captions"
+  style="
+    font-size: 48px;
+    color: white;
+    background: transparent;
+    text-align: center;
+    position: fixed;
+    width: 100vw;
+    bottom: 40px;
+    z-index: 9999;
+    pointer-events: none;
+    text-shadow: 2px 2px 8px #000;
+  "
+&gt;
+  {{ $store.state.captioner.transcript.final }} {{ $store.state.captioner.transcript.interim }}
+&lt;/div&gt;
 
+</div>
+</template>
 <style>
 .firebaseui-title {
   text-align: center !important;
 }
 </style>
-
 <style scoped>
 .button-only-disabled > .btn-primary:first-child {
   opacity: 0.6;
@@ -216,7 +230,6 @@
   line-height: 1.5rem;
 }
 </style>
-
 <script>
 import VolumeMeter from './VolumeMeter.vue';
 import CastButton from '../components/CastButton.vue';
@@ -225,7 +238,6 @@ import SettingsPopup from '../components/SettingsPopup.vue';
 import ChannelsPopup from '~/components/channels/ChannelsPopup';
 import saveToFile from '~/mixins/saveToFile';
 import dateFormat from '~/mixins/dateFormat';
-
 export default {
   mixins: [saveToFile, dateFormat],
   components: {
@@ -325,7 +337,6 @@ export default {
         this.$store.dispatch('captioner/restart');
       }
       this.$store.commit('captioner/CLEAR_TRANSCRIPT');
-
       this.$router.replace('/captioner');
     },
     startSaveToTextFile() {
